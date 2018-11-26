@@ -72,7 +72,8 @@ namespace VkLetterFrequencyApp
                         string posts;
                         try
                         {
-                            var wallGets = api.Wall.Get(new WallGetParams {OwnerId = ownerId, Count = 5});
+                            //var wallGets = api.Wall.Get(new WallGetParams {OwnerId = ownerId, Count = 5});
+                            var wallGets = api.Wall.Get(new WallGetParams { Domain = screenName,Count = 5 });
 
                             posts = String.Join("", wallGets.WallPosts.Select(p => p.Text).ToArray());
                         }

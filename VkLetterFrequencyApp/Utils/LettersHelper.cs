@@ -8,7 +8,7 @@ namespace VkLetterFrequencyApp.Utils
     {
         public static Dictionary<char, double> Frequency(string text, int digits = 5)
         {
-            var letters = text.ToLower().Where(Char.IsLetter).ToList();
+            var letters = text.ToLower().Where(Char.IsLetter).OrderBy(c => c).ToList();
 
             double countAll = letters.Count;
             return letters.GroupBy(c => c)
