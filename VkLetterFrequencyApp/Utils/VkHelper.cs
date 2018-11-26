@@ -45,18 +45,16 @@ namespace VkLetterFrequencyApp.Utils
             }
         }
 
-        public static long? GetObjectId(VkApi api, string screenName, out string displayName)
+        public static bool TryGetObjectName(VkApi api, string screenName, out string displayName)
         {
             displayName = String.Empty;
 
             try
             {
                 var vkObj = api.Utils.ResolveScreenName(screenName);
-                if (!vkObj.Id.HasValue)
+                if (!vkObj?.Id.HasValue ?? true)
                 {
-                    Console.WriteLine("Страница не найдена или не является пользователем/группой");
-
-                    return null;
+                    return false;
                 }
 
                 switch (vkObj.Type)
@@ -73,16 +71,16 @@ namespace VkLetterFrequencyApp.Utils
                         displayName = group?.Name;
                         break;
                     case VkObjectType.Application:
-                        return null;
+                        return false;
                 }
 
-                return vkObj.Id;
+                return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"{ex.Message}");
 
-                return null;
+                return false;
             }
         }
     }

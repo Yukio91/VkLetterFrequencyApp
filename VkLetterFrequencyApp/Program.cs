@@ -14,7 +14,7 @@ namespace VkLetterFrequencyApp
 {
     class Program
     {
-       static void Main(string[] args)
+        static void Main(string[] args)
         {
             using (var api = new VkApi())
             {
@@ -60,43 +60,38 @@ namespace VkLetterFrequencyApp
 
                 while (true)
                 {
-                    Console.WriteLine("Введите короткое имя страницы");
+                    Console.WriteLine("Введите короткое имя страницы:");
                     var screenName = Console.ReadLine();
 
+                    if (!VkHelper.TryGetObjectName(api, screenName, out string name))
+                    {
+                        Console.WriteLine("Страница не найдена или не является пользователем/группой");
+
+                        continue;
+                    }
+
+                    string posts;
                     try
                     {
-                        var ownerId = VkHelper.GetObjectId(api, screenName, out string name);
-                        if (!ownerId.HasValue)
-                            continue;
+                        var wallGets = api.Wall.Get(new WallGetParams {Domain = screenName, Count = 5});
 
-                        string posts;
-                        try
-                        {
-                            //var wallGets = api.Wall.Get(new WallGetParams {OwnerId = ownerId, Count = 5});
-                            var wallGets = api.Wall.Get(new WallGetParams { Domain = screenName,Count = 5 });
-
-                            posts = String.Join("", wallGets.WallPosts.Select(p => p.Text).ToArray());
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Ошибка при получении постов. {ex.Message}");
-
-                            continue;
-                        }
-
-                        var freq = LettersHelper.Frequency(posts);
-                        var json = JsonConvert.SerializeObject(freq, Formatting.Indented);
-
-                       var message = $"{name}, статистика для последних 5 постов: {json}";
-                        Console.WriteLine(message);
-
-                        var result = VkHelper.WallPost(api, message);
-                        Console.WriteLine(result);
+                        posts = String.Join("", wallGets.WallPosts.Select(p => p.Text).ToArray());
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"{ex.Message}");
+                        Console.WriteLine($"Ошибка при получении списка постов. {ex.Message}");
+
+                        continue;
                     }
+
+                    var freq = LettersHelper.Frequency(posts);
+                    var json = JsonConvert.SerializeObject(freq, Formatting.Indented);
+
+                    var message = $"{name}, статистика для последних 5 постов: {json}";
+                    Console.WriteLine(message);
+
+                    var result = VkHelper.WallPost(api, message);
+                    Console.WriteLine(result);
                 }
             }
         }
