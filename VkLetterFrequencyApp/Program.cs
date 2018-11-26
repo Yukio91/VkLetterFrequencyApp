@@ -21,7 +21,7 @@ namespace VkLetterFrequencyApp
                 while (true)
                 {
                     Console.WriteLine("Введите идентификатор приложения:");
-                    if (UInt64.TryParse(Console.ReadLine(), out ulong appId))
+                    if (!UInt64.TryParse(Console.ReadLine(), out ulong appId))
                     {
                         Console.WriteLine("Введён неверный идентификатор приложения");
 
